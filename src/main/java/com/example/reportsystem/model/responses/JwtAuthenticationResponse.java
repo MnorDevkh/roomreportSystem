@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class JwtAuthenticationResponse {
     private String id;
     private String email;
-    private String fistName;
+    private String firstName;
     private String lastName;
     private String token;
     private String role;

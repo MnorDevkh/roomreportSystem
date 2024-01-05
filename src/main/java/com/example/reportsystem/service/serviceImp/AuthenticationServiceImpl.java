@@ -9,10 +9,14 @@ import com.example.reportsystem.repository.UserRepository;
 import com.example.reportsystem.service.AuthenticationService;
 import com.example.reportsystem.service.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+
     @Override
     public JwtAuthenticationResponse signup(SignUpRequest request) {
         var user = User.builder().firstName(request.getFirstName()).lastName(request.getLastName())
@@ -31,24 +36,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return JwtAuthenticationResponse.builder()
                 .id(user.getId().toString())
                 .email(user.getEmail())
-                .fistName(user.getFirstName())
+                .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .token(jwt).build();
     }
 
     @Override
     public JwtAuthenticationResponse signin(SigninRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
-        var jwt = jwtService.generateToken(user);
-        return JwtAuthenticationResponse.builder()
-                .id(user.getId().toString())
-                .email(user.getEmail())
-                .fistName(user.getFirstName())
-                .lastName(user.getLastName())
-                .role(user.getRole().name())
-                .token(jwt).build();
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
+            var user = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
+
+            var jwt = jwtService.generateToken(user);
+
+            return JwtAuthenticationResponse.builder()
+                    .id(user.getId().toString())
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .role(user.getRole().name())
+                    .token(jwt).build();
+        } catch (AuthenticationException e) {
+            // Handle authentication failure
+            throw new BadCredentialsException("Invalid email or password.", e);
+        }
     }
 }

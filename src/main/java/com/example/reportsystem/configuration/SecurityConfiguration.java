@@ -21,21 +21,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-
+@CrossOrigin
 @Configuration
-@EnableWebSecurity
 @RequiredArgsConstructor
-@EnableMethodSecurity
 public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserService userService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http.cors().and().csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request ->
                         request.requestMatchers("/",
                                         "/v3/api-docs/**",
@@ -49,7 +48,7 @@ public class SecurityConfiguration {
 //                                        "/api/v1/report/**"
                                         )
                         .permitAll()
-                         .requestMatchers("/api/v1/report/*").hasAnyAuthority(Role.ADMIN.toString())
+                         .requestMatchers("/api/v1/report/*").hasAuthority(Role.USER.toString())
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))

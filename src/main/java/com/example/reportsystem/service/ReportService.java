@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 
 public interface ReportService {
-    ResponseEntity<?> findAllReport();
+    ResponseEntity<?> findAllReport(Integer size,Integer page);
+    ResponseEntity<?> findByTeacherId(Integer id);
     ResponseEntity<?> addNew(ReportRequest request);
 }

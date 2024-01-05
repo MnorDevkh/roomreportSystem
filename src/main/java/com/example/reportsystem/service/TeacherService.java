@@ -5,5 +5,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface TeacherService {
     ResponseEntity<?> findAllTeacher();
+//    ResponseEntity<?>
     ResponseEntity<?> save(TeacherRequest teacherRequest);
 }
