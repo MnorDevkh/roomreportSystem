@@ -17,12 +17,14 @@ public class Shift {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "shift_id")
-    private Integer id;
+    private long id;
     private String name;
     private String description;
-    private LocalDate date = LocalDate.now();
+    private LocalDate date;
+    private LocalDate deleteAtDate;
+    private boolean status = false;
 
     public ShiftDto toDto() {
-        return new ShiftDto(this.id,this.name,this.description,this.date);
+        return new ShiftDto(this.id,this.name,this.description);
     }
 }

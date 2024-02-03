@@ -11,12 +11,17 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @Builder
 public class ApiResponse<T>{
-    private String message;
-    private HttpStatus status;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T payload;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer page;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer size;
-    private long totalElement;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Long totalElement;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer totalPages;
 }
+
+

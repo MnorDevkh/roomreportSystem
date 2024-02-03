@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "reports")
@@ -12,27 +12,37 @@ import java.util.Date;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @Builder
 public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
     private Room room;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id")
-    private Teacher teacher;
+    @JoinColumn(name = "user_id")
+    @NonNull
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shift_id")
+    @NonNull
     private Shift shift;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id")
+    @NonNull
+    private Subject subject;
 
     private LocalDate date;
 
-    private LocalDate createdAt;
+    private LocalDate createdate;
 
     private Integer studentNum;
+    private LocalDate deleteAtDate;
+    private boolean status = false;
 }

@@ -9,12 +9,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class RoomDto {
-    private Integer id;
+    private long id;
     private String name;
     private String floor;
     private String type;
     private String description;
-    private LocalDate date = LocalDate.now();
 
 }

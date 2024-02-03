@@ -6,4 +6,6 @@ import org.springframework.http.ResponseEntity;
 public interface RoomService {
     ResponseEntity<?> findAll();
     ResponseEntity<?> save(RoomRequest request);
+    ResponseEntity<?> deleteById(long id);
+    ResponseEntity<?> updateById(RoomRequest request,long id);
 }

@@ -9,10 +9,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class ShiftDto {
-    private Integer id;
+    private long id;
     private String name;
     private String description;
-    private LocalDate date = LocalDate.now();
 
 }

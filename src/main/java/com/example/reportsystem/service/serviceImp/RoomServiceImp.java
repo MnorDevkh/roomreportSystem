@@ -3,39 +3,59 @@ package com.example.reportsystem.service.serviceImp;
 import com.example.reportsystem.model.Room;
 import com.example.reportsystem.model.request.RoomRequest;
 import com.example.reportsystem.model.responses.ApiResponse;
+import com.example.reportsystem.model.responses.RoomResponse;
 import com.example.reportsystem.repository.RoomRepository;
 import com.example.reportsystem.service.RoomService;
+import com.example.reportsystem.utilities.response.EmptyObject;
+import com.example.reportsystem.utilities.response.Message;
+import com.example.reportsystem.utilities.response.ResponseObject;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class RoomServiceImp implements RoomService {
     private final RoomRepository roomRepository;
+    ResponseObject res = new ResponseObject();
+    Message message = new Message();
+    EmptyObject emptyObject = new EmptyObject();
 
-    public RoomServiceImp(RoomRepository roomRepository) {
-        this.roomRepository = roomRepository;
-    }
     @Override
     public ResponseEntity<?> findAll() {
-        List<Room> roomResponse = roomRepository.findAll();
-try {
-    return ResponseEntity.ok(ApiResponse.<List<Room>>builder()
-            .message("room fetch successfully")
-            .status(HttpStatus.OK)
-            .payload(roomResponse)
-            .build());
-}catch (Exception e){
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ApiResponse.builder()
-            .message("Error fetching room")
-            .status(HttpStatus.NOT_FOUND)
-            .build());
+        List<Room> roomList = roomRepository.findAll();
+        List<RoomResponse> roomResponsesList  = new ArrayList<>();
+        for (Room room : roomList) {
+            if(!room.isStatus()){
+                // Create RoomResponse and add it to the list
+                RoomResponse roomResponse = RoomResponse.builder()
+                        .id(room.getId())
+                        .name(room.getName())
+                        .floor(room.getFloor())
+                        .type(room.getType())
+                        .description(room.getDescription())
+                        .date(LocalDate.now())
+                        .build();
+                roomResponsesList.add(roomResponse);
+            }
         }
+    try {
+    res.setStatus(true);
+    res.setMessage(message.getSuccess("Room"));
+    res.setData(roomResponsesList);
+    }catch (Exception e){
+    emptyObject.setStatus(false);
+    emptyObject.setMessage(message.invalidRequest("Room"));
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(emptyObject);
     }
-
+    return ResponseEntity.ok(res);
+    }
     @Override
     public ResponseEntity<?> save(RoomRequest request) {
 
@@ -45,26 +65,71 @@ try {
             .floor(request.getFloor())
             .type(request.getType())
             .description(request.getDescription())
+            .date(LocalDate.now())
             .build();
     try {
         Room  saveRoom = roomRepository.save(room);
-        return ResponseEntity.ok(ApiResponse.<Room>builder()
-                .message("room save successfully")
-                .status(HttpStatus.OK)
-                .payload(saveRoom)
-                .build());
+        res.setStatus(true);
+        res.setMessage(message.getSuccess("Room"));
+        res.setData(saveRoom);
+
     }catch (Exception e){
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.builder()
-                        .message("Error save room")
-                        .status(HttpStatus.NOT_FOUND)
-                        .build());
+        emptyObject.setStatus(false);
+        emptyObject.setMessage(message.invalidRequest("room"));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(emptyObject);
+    }
+        return ResponseEntity.ok(res);
     }
 
+    @Override
+    public ResponseEntity<?> deleteById(long id) {
+        Optional<Room> room = roomRepository.findById(id);
+        if(room.isPresent()){
+            Room roomObj =Room.builder()
+                    .id(room.get().getId())
+                    .name(room.get().getName())
+                    .type(room.get().getType())
+                    .floor(room.get().getFloor())
+                    .description(room.get().getDescription())
+                    .date(room.get().getDate())
+                    .deleteAtDate(LocalDate.now())
+                    .status(true)
+                    .build();
+            roomRepository.save(roomObj);
+        }
+        res.setStatus(true);
+        res.setMessage("Id" + room.get().getId()+ "success!");
+
+        return ResponseEntity.ok(res);
     }
 
-
-
+    @Override
+    public ResponseEntity<?> updateById(RoomRequest request, long id) {
+        Optional<Room> room = roomRepository.findById(id);
+        if(room.isPresent()){
+            Room roomObj =Room.builder()
+                    .id(room.get().getId())
+                    .name(request.getName())
+                    .type(request.getType())
+                    .floor(request.getFloor())
+                    .description(request.getDescription())
+                    .date(room.get().getDate())
+                    .build();
+            roomRepository.save(roomObj);
+            RoomResponse roomResponse = RoomResponse.builder()
+                    .id(roomObj.getId())
+                    .name(roomObj.getName())
+                    .type(roomObj.getType())
+                    .floor(roomObj.getFloor())
+                    .description(roomObj.getDescription())
+                    .date(roomObj.getDate())
+                    .build();
+            res.setMessage("room fetch success");
+            res.setStatus(true);
+            res.setData(roomResponse);
+        }
+        return ResponseEntity.ok(res);
+    }
 
 
 }

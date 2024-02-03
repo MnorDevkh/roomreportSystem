@@ -1,6 +1,7 @@
 package com.example.reportsystem.model;
 
 import com.example.reportsystem.enums.Role;
+import com.example.reportsystem.model.toDto.UserDto;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
@@ -28,7 +29,8 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "id")
+    private long id;
     private String firstName;
     private String lastName;
     @Column(unique = true)
@@ -69,5 +71,8 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+    public UserDto toDto(){
+       return new UserDto(this.id,this.firstName,this.lastName,this.email);
     }
 }

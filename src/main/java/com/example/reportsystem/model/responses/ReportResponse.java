@@ -1,15 +1,9 @@
 package com.example.reportsystem.model.responses;
 
-import com.example.reportsystem.model.Room;
-import com.example.reportsystem.model.Shift;
-import com.example.reportsystem.model.Teacher;
-import com.example.reportsystem.model.toDto.RoomDto;
-import com.example.reportsystem.model.toDto.ShiftDto;
-import com.example.reportsystem.model.toDto.TeacherDto;
+import com.example.reportsystem.model.toDto.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -19,11 +13,12 @@ import java.util.List;
 @Setter
 @Builder
 public class ReportResponse {
-    private Integer id;
-    private RoomDto room;
-    private TeacherDto teacher;
+    private long id;
+    private List<RoomDto> room;
+    private UserDto user;
     private ShiftDto shift;
-    private LocalDate date ;
-    private LocalDate create;
+    private SubjectDto subject;
     private Integer studentNum;
+    private LocalDate date ;
+    private LocalDate createDate;
 }

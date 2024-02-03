@@ -7,7 +7,9 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 @Getter
+@Builder
 public class ShiftResponse {
-    private Integer id;
+    private long id;
     private String name;
+    private String description;
 }

@@ -1,15 +1,19 @@
 package com.example.reportsystem.model.responses;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.time.LocalDate;
 
 @Data
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class RoomResponse {
-    private Integer id;
+    private long id;
     private String name;
+    private String floor;
+    private String type;
+    private String description;
+    private LocalDate date = LocalDate.now();
 }

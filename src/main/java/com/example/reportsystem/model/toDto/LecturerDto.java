@@ -1,7 +1,5 @@
 package com.example.reportsystem.model.toDto;
 
-import com.example.reportsystem.model.Teacher;
-import jakarta.persistence.Entity;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -11,10 +9,9 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TeacherDto{
-    private Integer id;
+public class LecturerDto {
+    private long id;
     private String name;
     private String description;
-    private LocalDate date = LocalDate.now();
 
 }
