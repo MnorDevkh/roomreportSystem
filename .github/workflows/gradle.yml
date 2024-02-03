@@ -30,17 +30,17 @@ jobs:
 
       - name: Stop and remove Docker container
         run: |
-          docker stop lms_api || true
-          docker rm lms_api || true
-          docker rmi lms_api || true
+          docker stop rs_api || true
+          docker rm rs_api || true
+          docker rmi rs_api || true
         continue-on-error: true
 
       - name: Build the Docker image
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          docker build -t lms_api .
+          docker build -t rs_api .
 
       - name: Run Docker container
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          docker run -d --name lms_api -p 4141:4141 --restart always lms_api
+          docker run -d --name rs_api -p 8081:8081 --restart always rs_api
