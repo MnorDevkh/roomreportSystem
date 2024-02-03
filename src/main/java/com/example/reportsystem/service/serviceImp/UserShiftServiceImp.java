@@ -62,7 +62,6 @@ public class UserShiftServiceImp implements UserShiftService {
     @Override
     public ResponseEntity<?> deleteById(long id) {
         Optional<UserShift> userShiftOptional = userShiftRepository.findById(id);
-
         if (userShiftOptional.isPresent()) {
             userShiftRepository.deleteById(id);
             res.setMessage("User shift deleted successfully");

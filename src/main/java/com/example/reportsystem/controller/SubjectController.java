@@ -42,5 +42,8 @@ public class SubjectController {
     public  ResponseEntity<?> updateById(@Param("Subject id") long id,@RequestBody SubjectRequest subjectRequest){
         return service.updateById(id,subjectRequest);
     }
-
+    @GetMapping("/test")
+    public  String test(){
+        return "hello";
+    }
 }
