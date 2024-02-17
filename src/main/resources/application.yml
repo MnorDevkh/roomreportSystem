@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://128.199.249.15:3306/reportsystem
+    url: jdbc:mysql://68.183.180.67:3306/reportsystem
     username: root
     password: 1213@A*#
     driver-class-name: com.mysql.cj.jdbc.Driver
