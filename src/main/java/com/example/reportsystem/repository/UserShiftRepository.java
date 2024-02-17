@@ -3,6 +3,7 @@ package com.example.reportsystem.repository;
 import com.example.reportsystem.model.User;
 import com.example.reportsystem.model.UserShift;
 import com.example.reportsystem.model.UserSubject;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +16,6 @@ public interface UserShiftRepository extends JpaRepository<UserShift,Long> {
     List<UserShift> findAllByUserId(long id);
 
     boolean existsByUserIdAndShiftId(long user, long shift);
+    @Transactional
+    void deleteByUserIdAndShiftId(long user, long shift);
 }

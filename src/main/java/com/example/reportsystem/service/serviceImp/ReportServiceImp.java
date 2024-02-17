@@ -140,8 +140,6 @@ public class ReportServiceImp implements ReportService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-
     @Override
     @Transactional
     public ResponseEntity<?> addNew(ReportRequest request) {

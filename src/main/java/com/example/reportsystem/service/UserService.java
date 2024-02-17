@@ -15,4 +15,5 @@ public interface UserService {
     ResponseEntity<?> findUserBySubject(long id);
     ResponseEntity<?> findUserByShift(long id);
     ResponseEntity<?> findUser();
+    ResponseEntity<?> findUserById(long id);
 }

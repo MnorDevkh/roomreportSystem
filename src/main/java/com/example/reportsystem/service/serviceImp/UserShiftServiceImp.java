@@ -73,4 +73,22 @@ public class UserShiftServiceImp implements UserShiftService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
         }
     }
+
+    @Override
+    public ResponseEntity<?> deleteByUserShift(UserShiftRequest userShiftRequest) {
+        if (userShiftRepository.existsByUserIdAndShiftId(
+                userShiftRequest.getUser(),
+                userShiftRequest.getShift())) {
+            userShiftRepository.deleteByUserIdAndShiftId(
+                    userShiftRequest.getUser(),
+                    userShiftRequest.getShift());
+            res.setMessage("User shift deleted successfully");
+            res.setStatus(true);
+            return ResponseEntity.ok(res);
+        } else {
+            res.setMessage("User shift not found");
+            res.setStatus(false);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+        }
+    }
 }

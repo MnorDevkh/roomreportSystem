@@ -96,6 +96,63 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ResponseEntity<?> findUserById(long id) {
+        try {
+            Optional<User> userOptional = userRepository.findById(id);
+            List<UserResponse> userResponses = new ArrayList<>();
+            if (userOptional.isPresent()){
+                List<UserSubject> userSubjectList = userSubjectRepository.findAllByUserId(userOptional.get().getId());
+                List<SubjectDto> subjectDtos = new ArrayList<>();
+                for (UserSubject userSubject: userSubjectList){
+                    Optional<Subject> subject = subjectRepository.findById(userSubject.getSubject().getId());
+                    System.out.println("subject " + subject);
+                    if(subject.isPresent() && !subject.get().isStatus()){
+                        SubjectDto subjectDto = SubjectDto.builder()
+                                .id(subject.get().getId())
+                                .name(subject.get().getName())
+                                .description(subject.get().getDescription())
+                                .build();
+                        subjectDtos.add(subjectDto);
+                    }
+                }
+                List<UserShift> userShifts = userShiftRepository.findAllByUserId(userOptional.get().getId());
+                List<ShiftDto> shiftDtos = new ArrayList<>();
+                for(UserShift userShift : userShifts){
+                    Optional<Shift> shift = shiftRepository.findById(userShift.getShift().getId());
+                    if(shift.isPresent() && !shift.get().isStatus()){
+                        ShiftDto shiftDto = ShiftDto.builder()
+                                .id(shift.get().getId())
+                                .name(shift.get().getName())
+                                .description(shift.get().getDescription())
+                                .build();
+                        shiftDtos.add(shiftDto);
+                    }
+                }
+
+                UserResponse userResponse = UserResponse.builder()
+                        .id(userOptional.get().getId())
+                        .email(userOptional.get().getEmail())
+                        .firstName(userOptional.get().getFirstName())
+                        .lastName(userOptional.get().getLastName())
+                        .role(userOptional.get().getRole())
+                        .subject(subjectDtos)
+                        .shift(shiftDtos)
+                        .build();
+                userResponses.add(userResponse);
+            }
+
+            res.setStatus(true);
+            res.setMessage(message.getSuccess("User"));
+            res.setData(userResponses);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not\\");
+        }
+        return ResponseEntity.ok(res);
+
+    }
+
+    @Override
     public ResponseEntity<?> findUserBySubject(long id) {
         try {
             List<UserSubject> userSubjectList = userSubjectRepository.findAllBySubjectId(id);

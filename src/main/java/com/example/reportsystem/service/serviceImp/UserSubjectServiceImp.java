@@ -81,4 +81,22 @@ EmptyObject emptyObject = new EmptyObject();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
         }
     }
+
+    @Override
+    public ResponseEntity<?> deleteByUserSubject(UserSubjectRequest userSubjectRequest) {
+        if (subjectToUserRepository.existsByUserIdAndSubjectId(
+                userSubjectRequest.getUser(),
+                userSubjectRequest.getSubject())) {
+            subjectToUserRepository.deleteByUserIdAndSubjectId(
+                    userSubjectRequest.getUser(),
+                    userSubjectRequest.getSubject());
+            res.setMessage("User subject deleted successfully");
+            res.setStatus(true);
+            return ResponseEntity.ok(res);
+        } else {
+            res.setMessage("User subject not found");
+            res.setStatus(false);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+        }
+    }
 }

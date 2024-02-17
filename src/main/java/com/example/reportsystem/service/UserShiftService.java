@@ -7,4 +7,5 @@ import org.springframework.http.ResponseEntity;
 public interface UserShiftService {
     ResponseEntity<?> save(UserShiftRequest userShiftRequest);
     ResponseEntity<?> deleteById(long id);
+    ResponseEntity<?> deleteByUserShift(UserShiftRequest userShiftRequest);
 }

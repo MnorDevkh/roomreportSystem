@@ -23,4 +23,8 @@ public class UserShiftController {
     public ResponseEntity<?> delete(@Param("User id") long id){
         return userShiftService.deleteById(id);
     }
+    @DeleteMapping("/deleteUserShift")
+    public  ResponseEntity<?> deleteUserShift(@RequestBody UserShiftRequest userShiftRequest){
+        return userShiftService.deleteByUserShift(userShiftRequest);
+    }
 }

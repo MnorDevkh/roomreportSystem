@@ -36,4 +36,8 @@ public class UserController {
     public ResponseEntity<?> getAllUser(){
         return userService.findAllUser();
     }
+    @GetMapping("/getById")
+    public ResponseEntity<?> getUserById(long id){
+        return userService.findUserById(id);
+    }
 }

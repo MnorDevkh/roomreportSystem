@@ -28,6 +28,10 @@ public class UserSubjectController {
     }
     @DeleteMapping("/deleteById")
     public ResponseEntity<?> delete(@Param("User id") long id){
-        return userSubjectService.deleteById(id);
+        return  ResponseEntity.ok(delete(id));
+    }
+    @DeleteMapping("/deleteByUserShift")
+    public ResponseEntity<?> deleteByUserSubject(@RequestBody UserSubjectRequest userSubjectRequest){
+        return userSubjectService.deleteByUserSubject(userSubjectRequest);
     }
 }

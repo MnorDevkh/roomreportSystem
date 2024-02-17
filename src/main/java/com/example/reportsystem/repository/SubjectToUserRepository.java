@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface SubjectToUserRepository extends JpaRepository<UserSubject,Long> {
 
     boolean existsByUserIdAndSubjectId(long user, long subject);
+
+    void deleteByUserIdAndSubjectId(long user, long subject);
 }
