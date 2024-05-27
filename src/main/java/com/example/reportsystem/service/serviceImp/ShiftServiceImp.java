@@ -1,17 +1,20 @@
 package com.example.reportsystem.service.serviceImp;
 
 import com.example.reportsystem.model.*;
+import com.example.reportsystem.model.report.Report;
 import com.example.reportsystem.model.request.ShiftRequest;
 import com.example.reportsystem.model.responses.ApiResponse;
 import com.example.reportsystem.model.responses.ShiftResponse;
 import com.example.reportsystem.model.responses.SubjectResponse;
 import com.example.reportsystem.repository.ShiftRepository;
-import com.example.reportsystem.repository.UserShiftRepository;
 import com.example.reportsystem.service.ShiftService;
 import com.example.reportsystem.utilities.response.EmptyObject;
 import com.example.reportsystem.utilities.response.Message;
 import com.example.reportsystem.utilities.response.ResponseObject;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,19 +31,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ShiftServiceImp implements ShiftService {
     private final ShiftRepository shiftRepository;
-    private final UserShiftRepository userShiftRepository;
     ResponseObject res = new ResponseObject();
     Message message = new Message();
     EmptyObject emptyObject = new EmptyObject();
 
-
     @Override
     public ResponseEntity<?> findAll() {
-
         try {
             List<Shift> shifts = shiftRepository.findAll();
             List<ShiftResponse> shiftResponse = shifts.stream()
-                        .filter(shift -> !shift.isStatus())
+                        .filter(shift -> !shift.isDeleted())
                         .map(shift -> ShiftResponse.builder()
                                 .id(shift.getId())
                                 .name(shift.getName())
@@ -62,16 +61,17 @@ public class ShiftServiceImp implements ShiftService {
     }
 
     @Override
-    public ResponseEntity<?> findShiftCurrenUser() {
+    public ResponseEntity<?> findShiftCurrenUser(Integer pageNumber, Integer pageSize, String sortBy, boolean ascending) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User currentUser = (User) authentication.getPrincipal();
-            List<UserShift> userShiftList = userShiftRepository.findAllByUser(currentUser);
             List<SubjectResponse> subjectResponses = new ArrayList<>();
-
-            for (UserShift userShift : userShiftList) {
-                Optional<Shift> shiftOptional = shiftRepository.findById(userShift.getShift().getId());
-                if (shiftOptional.isPresent() && !shiftOptional.get().isStatus()) {
+            Sort.Direction sortDirection = ascending ? Sort.Direction.ASC : Sort.Direction.DESC;
+            PageRequest pageable = PageRequest.of(pageNumber - 1, pageSize, sortDirection, sortBy);
+            Page<Shift> pageResult = shiftRepository.findByDeletedFalseAndUsers(pageable, currentUser);
+            for (Shift shift : pageResult) {
+                Optional<Shift> shiftOptional = shiftRepository.findById(shift.getId());
+                if (shiftOptional.isPresent() && !shiftOptional.get().isDeleted()) {
                     SubjectResponse subjectResponse = SubjectResponse.builder()
                             .id(shiftOptional.get().getId())
                             .name(shiftOptional.get().getName())
@@ -81,15 +81,7 @@ public class ShiftServiceImp implements ShiftService {
                     subjectResponses.add(subjectResponse);
                 }
             }
-
-            ApiResponse apiResponse = ApiResponse.builder()
-                    .totalElement((long) subjectResponses.size())
-                    .payload(subjectResponses)
-                    .build();
-            res.setStatus(true);
-            res.setMessage(message.getSuccess("shift"));
-            res.setData(apiResponse);
-
+            ApiResponse res = new ApiResponse(true, "Fetch books successful!", subjectResponses, pageResult.getNumber() + 1, pageResult.getSize(), pageResult.getTotalPages(), pageResult.getTotalElements());
             return ResponseEntity.ok(res);
         } catch (Exception e) {
             emptyObject.setStatus(false);
@@ -123,16 +115,16 @@ public class ShiftServiceImp implements ShiftService {
     }
 
     @Override
-    public ResponseEntity<?> deleteById(long id) {
+    public ResponseEntity<?> deleteById(Integer id) {
         Optional<Shift> shift = shiftRepository.findById(id);
-            if (shift.isPresent() && !shift.get().isStatus()){
+            if (shift.isPresent() && !shift.get().isDeleted()){
                Shift shift1 = Shift.builder()
                        .id(shift.get().getId())
                        .name(shift.get().getName())
                        .description(shift.get().getDescription())
                        .date(shift.get().getDate())
                        .deleteAtDate(LocalDate.now())
-                       .status(true)
+                       .deleted(true)
                        .build();
                shiftRepository.save(shift1);
             }
@@ -148,7 +140,7 @@ public class ShiftServiceImp implements ShiftService {
     }
 
     @Override
-    public ResponseEntity<?> updateById(long id,ShiftRequest shiftRequest) {
+    public ResponseEntity<?> updateById(Integer id,ShiftRequest shiftRequest) {
         try {
             Optional<Shift> shiftOptional = shiftRepository.findById(id);
             if (shiftOptional.isPresent()){

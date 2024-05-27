@@ -6,9 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
-@Data
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,12 +18,14 @@ public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "subject_id")
-    private long id;
+    private Integer id;
     private String name;
     private String description;
     private LocalDate date;
     private LocalDate deleteAtDate;
-    private boolean status;
+    private boolean deleted;
+    @ManyToMany(mappedBy = "subjects")
+    Set<User> users;
     public SubjectDto toDto(){return new SubjectDto(this.id,this.name,this.description);}
 
 }

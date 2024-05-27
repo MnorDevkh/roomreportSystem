@@ -1,22 +1,14 @@
 package com.example.reportsystem.service.serviceImp;
 
 import com.example.reportsystem.model.*;
-import com.example.reportsystem.model.request.ShiftRequest;
 import com.example.reportsystem.model.request.SubjectRequest;
 import com.example.reportsystem.model.responses.ApiResponse;
 import com.example.reportsystem.model.responses.SubjectResponse;
-import com.example.reportsystem.model.responses.UserSubjectResponse;
-import com.example.reportsystem.model.toDto.SubjectDto;
-import com.example.reportsystem.model.toDto.UserDto;
 import com.example.reportsystem.repository.SubjectRepository;
-import com.example.reportsystem.repository.UserRepository;
-import com.example.reportsystem.repository.UserSubjectRepository;
 import com.example.reportsystem.service.SubjectService;
 import com.example.reportsystem.utilities.response.EmptyObject;
 import com.example.reportsystem.utilities.response.Message;
 import com.example.reportsystem.utilities.response.ResponseObject;
-import io.swagger.v3.oas.annotations.servers.Server;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +26,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SubjectServiceImp implements SubjectService {
     private final SubjectRepository subjectRepository;
-    private final UserSubjectRepository userSubjectRepository;
     ResponseObject res = new ResponseObject();
     Message message = new Message();
     EmptyObject emptyObject = new EmptyObject();
@@ -43,7 +34,7 @@ public class SubjectServiceImp implements SubjectService {
     public ResponseEntity<?> findAllSubject() {
         List<Subject> subjects = subjectRepository.findAll();
         List<SubjectResponse> subjectResponses = subjects.stream()
-                .filter(subject -> !subject.isStatus())
+                .filter(subject -> !subject.isDeleted())
                 .map(subject -> SubjectResponse.builder()
                         .id(subject.getId())
                         .name(subject.getName())
@@ -57,8 +48,7 @@ public class SubjectServiceImp implements SubjectService {
             res.setMessage(message.getSuccess("Report"));
             res.setData(subjectResponses);
 
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             emptyObject.setStatus(false);
             emptyObject.setMessage(message.loginFail());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(emptyObject);
@@ -68,37 +58,34 @@ public class SubjectServiceImp implements SubjectService {
 
     @Override
     public ResponseEntity<?> findSubject() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = (User) authentication.getPrincipal();
-        List<UserSubject> userSubjectList = userSubjectRepository.findAllByUser(currentUser);
-        List<SubjectResponse> subjectResponses = new ArrayList<>();
-        for (UserSubject userSubject: userSubjectList){
-            Optional<Subject> subject = subjectRepository.findById(userSubject.getSubject().getId());
-            if(subject.isPresent() && !subject.get().isStatus()){
-                SubjectResponse subjectResponse =  SubjectResponse.builder()
-                        .id(subject.get().getId())
-                        .name(subject.get().getName())
-                        .description(subject.get().getDescription())
-                        .date(LocalDate.now())
-                        .build();
-                subjectResponses.add(subjectResponse);
-            }
-        }
         try {
-            ApiResponse apiResponse = ApiResponse.builder()
-                    .totalElement((long) subjectResponses.size())
-                    .payload(subjectResponses)
-                    .build();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User currentUser = (User) authentication.getPrincipal();
+            List<Subject> subjectList = subjectRepository.findByDeletedFalseAndUsers(currentUser);
+            List<SubjectResponse> subjectResponses = new ArrayList<>();
+            for (Subject subject : subjectList) {
+                Optional<Subject> subjectOptional = subjectRepository.findById(subject.getId());
+                if (subjectOptional.isPresent()) {
+                    SubjectResponse subjectResponse = SubjectResponse.builder()
+                            .id(subjectOptional.get().getId())
+                            .name(subjectOptional.get().getName())
+                            .description(subjectOptional.get().getDescription())
+                            .date(LocalDate.now())
+                            .build();
+                    subjectResponses.add(subjectResponse);
+                }
+            }
+
+            ResponseObject res = new ResponseObject();
             res.setStatus(true);
-            res.setMessage(message.getSuccess("Report"));
-            res.setData(apiResponse);
-        }
-        catch (Exception e){
+            res.setMessage("fetch data successfully");
+            res.setData(subjectResponses);
+            return ResponseEntity.ok(res);
+        } catch (Exception e) {
             emptyObject.setStatus(false);
             emptyObject.setMessage(message.loginFail());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(emptyObject);
         }
-        return ResponseEntity.ok(res);
     }
 
     @Override
@@ -111,19 +98,19 @@ public class SubjectServiceImp implements SubjectService {
                 .build();
 
         try {
-            Subject subject1= subjectRepository.save(subject);
+            Subject subject1 = subjectRepository.save(subject);
             SubjectResponse subjectResponse = new SubjectResponse();
             subjectResponse.setId(subject1.getId());
             subjectResponse.setName(subject1.getName());
             subjectResponse.setDescription(subject1.getDescription());
             subjectResponse.setDate(subject1.getDate());
             res.setStatus(true);
-            res.setMessage(message.getSuccess("report"));
+            res.setMessage(message.getSuccess("Subject"));
             res.setData(subjectResponse);
 
-        }catch (Exception e){
-                    emptyObject.setStatus(false);
-                    emptyObject.setMessage(message.loginFail());
+        } catch (Exception e) {
+            emptyObject.setStatus(false);
+            emptyObject.setMessage(message.loginFail());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(emptyObject);
         }
         return ResponseEntity.ok(res);
@@ -131,46 +118,46 @@ public class SubjectServiceImp implements SubjectService {
 
 
     @Override
-    public ResponseEntity<?> findSubjectByUser(long id) {
-        try {
-            List<UserSubject> userSubjectList = userSubjectRepository.findAllByUserId(id);
-            List<SubjectResponse> subjectResponses = new ArrayList<>();
-                for(UserSubject userSubject: userSubjectList){
-                    Optional<Subject> subject = subjectRepository.findById(userSubject.getSubject().getId());
-                        if(!subject.get().isStatus()){
-                            if(subject.isPresent()){
-                                SubjectResponse subjectResponse = SubjectResponse.builder()
-                                    .id(userSubject.getSubject().getId())
-                                    .name(userSubject.getSubject().getName())
-                                    .description(userSubject.getSubject().getDescription())
-                                    .date(userSubject.getDate())
-                                .build();
-                subjectResponses.add(subjectResponse);
-            }
-        }
-
-        ApiResponse apiResponse = ApiResponse.builder()
-                .payload(subjectResponses)
-                .totalElement(Long.valueOf(subjectResponses.size()))
-                .build();
-        res.setStatus(true);
-        res.setMessage(message.getSuccess("subject"));
-        res.setData(apiResponse);
-
-    }
-    return ResponseEntity.ok(res);
-    }catch (Exception e){
-    return null;
-}
+    public ResponseEntity<?> findSubjectByUser(Integer id) {
+//        try {
+//            List<UserSubject> userSubjectList = userSubjectRepository.findAllByUserId(id);
+//            List<SubjectResponse> subjectResponses = new ArrayList<>();
+//                for(UserSubject userSubject: userSubjectList){
+//                    Optional<Subject> subject = subjectRepository.findById(userSubject.getSubject().getId());
+//                        if(!subject.get().isStatus()){
+//                            if(subject.isPresent()){
+//                                SubjectResponse subjectResponse = SubjectResponse.builder()
+//                                    .id(userSubject.getSubject().getId())
+//                                    .name(userSubject.getSubject().getName())
+//                                    .description(userSubject.getSubject().getDescription())
+//                                    .date(userSubject.getDate())
+//                                .build();
+//                subjectResponses.add(subjectResponse);
+//            }
+//        }
+//
+//        ApiResponse apiResponse = ApiResponse.builder()
+//                .payload(subjectResponses)
+//                .totalElement(Long.valueOf(subjectResponses.size()))
+//                .build();
+//        res.setStatus(true);
+//        res.setMessage(message.getSuccess("subject"));
+//        res.setData(apiResponse);
+//
+//    }
+//    return ResponseEntity.ok(res);
+//    }catch (Exception e){
+        return null;
+//}
 
     }
 
     @Override
-    public ResponseEntity<?> deleteById(long id) {
+    public ResponseEntity<?> deleteById(Integer id) {
         Optional<Subject> subject = null;
         subject = subjectRepository.findById(id);
         try {
-            if(!subject.get().isStatus()) {
+            if (!subject.get().isDeleted()) {
                 if (subject.isPresent()) {
                     Subject subject1 = Subject.builder()
                             .id(subject.get().getId())
@@ -178,7 +165,7 @@ public class SubjectServiceImp implements SubjectService {
                             .description(subject.get().getDescription())
                             .date(subject.get().getDate())
                             .deleteAtDate(subject.get().getDeleteAtDate())
-                            .status(true)
+                            .deleted(true)
                             .build();
                     subjectRepository.save(subject1);
                 }
@@ -192,11 +179,11 @@ public class SubjectServiceImp implements SubjectService {
     }
 
     @Override
-    public ResponseEntity<?> updateById(long id, SubjectRequest subjectRequest) {
+    public ResponseEntity<?> updateById(Integer id, SubjectRequest subjectRequest) {
         try {
             Optional<Subject> subjectOptional = subjectRepository.findById(id);
-            if (subjectOptional.isPresent()){
-                Subject subject=Subject.builder()
+            if (subjectOptional.isPresent()) {
+                Subject subject = Subject.builder()
                         .id(subjectOptional.get().getId())
                         .name(subjectRequest.getName())
                         .description(subjectRequest.getDescription())
@@ -207,7 +194,7 @@ public class SubjectServiceImp implements SubjectService {
                 res.setStatus(true);
                 res.setData(subject);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);
         }
         return ResponseEntity.ok(res);

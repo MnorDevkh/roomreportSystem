@@ -6,22 +6,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ApiResponse<T>{
-
+    private boolean status;
+    private String message;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private T payload;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Integer page;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Integer size;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Long totalElement;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Integer totalPages;
+    private List<?> data;
+    private int page;
+    private int size;
+    private int totalPages;
+    private long totalElements;
 }
 
 

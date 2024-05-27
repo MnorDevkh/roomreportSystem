@@ -10,7 +10,7 @@ public interface SubjectService {
     ResponseEntity<?> findAllSubject();
     ResponseEntity<?> findSubject();
     ResponseEntity<?> addSubject(SubjectRequest subjectRequest);
-    ResponseEntity<?> findSubjectByUser(long id);
-    ResponseEntity<?> deleteById(long id);
-    ResponseEntity<?> updateById(long id, SubjectRequest subjectRequest);
+    ResponseEntity<?> findSubjectByUser(Integer id);
+    ResponseEntity<?> deleteById(Integer id);
+    ResponseEntity<?> updateById(Integer id, SubjectRequest subjectRequest);
 }

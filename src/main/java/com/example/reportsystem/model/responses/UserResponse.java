@@ -1,6 +1,7 @@
 package com.example.reportsystem.model.responses;
 
 import com.example.reportsystem.enums.Role;
+import com.example.reportsystem.model.toDto.RoomDto;
 import com.example.reportsystem.model.toDto.ShiftDto;
 import com.example.reportsystem.model.toDto.SubjectDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -20,7 +21,6 @@ public class UserResponse {
     private String firstName;
     private String lastName;
     private String email;
-    private Role role;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<ShiftDto> shift;
     @JsonInclude(JsonInclude.Include.NON_NULL)

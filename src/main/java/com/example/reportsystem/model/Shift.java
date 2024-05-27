@@ -5,9 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
@@ -17,13 +17,14 @@ public class Shift {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "shift_id")
-    private long id;
+    private Integer id;
     private String name;
     private String description;
     private LocalDate date;
     private LocalDate deleteAtDate;
-    private boolean status = false;
-
+    private boolean deleted = false;
+    @ManyToMany(mappedBy = "shifts")
+    Set<User> users;
     public ShiftDto toDto() {
         return new ShiftDto(this.id,this.name,this.description);
     }

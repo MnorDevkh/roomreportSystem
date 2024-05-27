@@ -19,6 +19,6 @@ public class ReportResponse {
     private ShiftDto shift;
     private SubjectDto subject;
     private Integer studentNum;
-    private LocalDate date ;
+    private LocalDate reportDate ;
     private LocalDate createDate;
 }

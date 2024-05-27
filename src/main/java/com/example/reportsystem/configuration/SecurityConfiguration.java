@@ -40,16 +40,17 @@ public class SecurityConfiguration {
                                         "/v3/api-docs/**",
                                         "/swagger-ui/**",
                                         "/swagger-ui-html",
-                                        "/api/v1/auth/**"
+                                        "/api/v1/auth/**",
+                                        "/api/v1/report/*",
+                                        "/api/v1/room/*",
+                                        "/api/v1/teachers/*",
+                                        "/api/v1/shift/*",
+                                        "/api/v1/subject/*",
+                                        "/api/v1/user-subject/*",
+                                        "/api/v1/user/*"
                                         )
                         .permitAll()
-                         .requestMatchers("/api/v1/report/*",
-                                 "/api/v1/room/*",
-                                 "/api/v1/teachers/*",
-                                 "/api/v1/shift/*",
-                                 "/api/v1/subject/*",
-                                 "/api/v1/user-subject/*",
-                                 "/api/v1/user/*").hasAnyAuthority(Role.USER.toString(),Role.ADMIN.toString())
+//                         .requestMatchers().hasAnyAuthority(Role.USER.toString(),Role.ADMIN.toString())
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))

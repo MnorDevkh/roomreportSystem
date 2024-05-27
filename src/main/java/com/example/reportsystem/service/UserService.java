@@ -1,6 +1,7 @@
 package com.example.reportsystem.service;
 
 import com.example.reportsystem.model.User;
+import com.example.reportsystem.model.request.LectureRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,4 +17,6 @@ public interface UserService {
     ResponseEntity<?> findUserByShift(long id);
     ResponseEntity<?> findUser();
     ResponseEntity<?> findUserById(long id);
+    ResponseEntity<?> AddSubjectRoomShiftToLecturer(LectureRequest lectureRequest);
+
 }

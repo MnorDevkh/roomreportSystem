@@ -3,7 +3,7 @@
 //import com.example.reportsystem.model.Lecturer;
 //import com.example.reportsystem.model.LecturerShift;
 //import com.example.reportsystem.model.Shift;
-//import com.example.reportsystem.model.request.TeacherRequest;
+//import com.example.reportsystem.model.request.LectureRequest;
 //import com.example.reportsystem.model.responses.ApiResponse;
 //import com.example.reportsystem.model.responses.LecturerResponse;
 //import com.example.reportsystem.model.toDto.LecturerDto;
@@ -78,7 +78,7 @@
 //    }
 //
 //    @Override
-//    public ResponseEntity<?> save(TeacherRequest teacherRequest) {
+//    public ResponseEntity<?> save(LectureRequest teacherRequest) {
 //        Lecturer lecturerObj = null;
 //        lecturerObj = Lecturer.builder()
 //                .name(teacherRequest.getName())

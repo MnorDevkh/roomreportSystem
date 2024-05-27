@@ -1,10 +1,9 @@
 package com.example.reportsystem.service.serviceImp;
 
-import com.example.reportsystem.model.Room;
+import com.example.reportsystem.model.report.Room;
 import com.example.reportsystem.model.request.RoomRequest;
-import com.example.reportsystem.model.responses.ApiResponse;
 import com.example.reportsystem.model.responses.RoomResponse;
-import com.example.reportsystem.repository.RoomRepository;
+import com.example.reportsystem.repository.report.RoomRepository;
 import com.example.reportsystem.service.RoomService;
 import com.example.reportsystem.utilities.response.EmptyObject;
 import com.example.reportsystem.utilities.response.Message;
@@ -82,7 +81,7 @@ public class RoomServiceImp implements RoomService {
     }
 
     @Override
-    public ResponseEntity<?> deleteById(long id) {
+    public ResponseEntity<?> deleteById(Integer id) {
         Optional<Room> room = roomRepository.findById(id);
         if(room.isPresent()){
             Room roomObj =Room.builder()
@@ -104,7 +103,7 @@ public class RoomServiceImp implements RoomService {
     }
 
     @Override
-    public ResponseEntity<?> updateById(RoomRequest request, long id) {
+    public ResponseEntity<?> updateById(RoomRequest request, Integer id) {
         Optional<Room> room = roomRepository.findById(id);
         if(room.isPresent()){
             Room roomObj =Room.builder()
