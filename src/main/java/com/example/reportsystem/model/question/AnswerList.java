@@ -16,6 +16,10 @@ public class AnswerList {
     private Integer id;
     private String answer;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "questions_id")
-    private Sessions sessions;
+    @JoinColumn(name = "session_i_id")
+    private SessionI sessionI;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "session_IIAQ_id")
+    private SessionIIAQ sessionIIAQ;
 }

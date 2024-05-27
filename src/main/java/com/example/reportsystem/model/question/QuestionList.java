@@ -12,11 +12,11 @@ import lombok.*;
 public class QuestionList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "questionList_id")
+    @Column(name = "question_list_id")
     private Integer id;
     private String question;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "questions_id")
-    private Sessions sessions;
+    @JoinColumn(name = "question_id")
+    private SessionI sessionI;
 
 }

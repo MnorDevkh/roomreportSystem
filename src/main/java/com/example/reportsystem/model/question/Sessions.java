@@ -16,12 +16,24 @@ public class Sessions {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sessions_id")
     private Integer id;
-    private String questionTitle;
-    @OneToMany(mappedBy = "sessions", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<QuestionList> questionList;
-    @OneToMany(mappedBy = "sessions", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AnswerList> answerList;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id")
-    private Questions questions;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "session_i_id")
+    private SessionI sessionI;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "session_ii_id")
+    private SessionII sessionII;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "session_iii_id")
+    private SessionIII sessionIII;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "session_iv_id")
+    private SessionIV sessionIV;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "session_v_id")
+    private SessionV sessionV;
 }

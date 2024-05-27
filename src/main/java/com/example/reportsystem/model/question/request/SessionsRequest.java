@@ -1,14 +1,20 @@
 package com.example.reportsystem.model.question.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.example.reportsystem.model.question.*;
+import com.example.reportsystem.model.question.dto.*;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class SessionsRequest {
-    private String questionTitle;
-    private List<QuestionListRequest> questionList;
-    private List<AnswerListRequest> answerListRequests;
+    private SessionIRequest sessionI;
+    private SessionIIRequest sessionII;
+    private SessionIII sessionIII;
+    private SessionIV sessionIV;
+    private SessionV sessionV;
 }
