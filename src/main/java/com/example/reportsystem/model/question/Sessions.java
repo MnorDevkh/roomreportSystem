@@ -36,4 +36,7 @@ public class Sessions {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "session_v_id")
     private SessionV sessionV;
+
+    @OneToOne(mappedBy = "sessions")
+    private Questions questions;
 }

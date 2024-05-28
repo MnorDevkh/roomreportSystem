@@ -5,6 +5,7 @@ import com.example.reportsystem.model.question.dto.AnswerListDto;
 import com.example.reportsystem.model.question.dto.QuestionListDto;
 import com.example.reportsystem.model.question.request.*;
 import com.example.reportsystem.model.question.response.QuestionResponse;
+import com.example.reportsystem.model.question.response.SessionIResponse;
 import com.example.reportsystem.model.question.response.SessionsResponse;
 import com.example.reportsystem.repository.question.ExamQuestionsRepository;
 import com.example.reportsystem.service.question.ExamQuestionsService;
@@ -23,77 +24,111 @@ public class ExamQuestionsServiceImpl implements ExamQuestionsService {
     @Autowired
     ExamQuestionsRepository examQuestionsRepository;
 
-
     @Override
     public ResponseEntity<QuestionResponse> add(QuestionsRequest request) {
+        System.out.println(request + "12131");
         try {
-            // Map request data to entity objects
             Questions questions = mapQuestionsRequestToEntity(request);
-
-            // Save the questions entity to the repository
             Questions savedQuestions = examQuestionsRepository.save(questions);
-
-            // Create and return the response
             QuestionResponse questionResponse = createQuestionResponse(savedQuestions);
             return ResponseEntity.status(HttpStatus.CREATED).body(questionResponse);
         } catch (Exception e) {
-            // Handle exceptions and return appropriate response
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+
     }
 
     private Questions mapQuestionsRequestToEntity(QuestionsRequest request) {
-        // Create a new Questions entity and set its attributes using data from the request
-        Questions questions = new Questions();
-        questions.setTitle(request.getTitle());
-        questions.setSemester(request.getSemester());
-        questions.setYear(request.getYear());
-        questions.setSubject(request.getSubject());
-        questions.setShift(request.getShift());
-        questions.setLecture(request.getLecture());
-
-        // Map SessionsRequest to Sessions entity
-        Sessions sessions = new Sessions();
-        sessions.setSessionI(mapSessionIRequestToEntity(request.getSessionRequest().getSessionI()));
-        sessions.setSessionII(mapSessionIIRequestToEntity(request.getSessionRequest().getSessionII()));
-//        sessions.setSessionIII(mapSessionIIIRequestToEntity(request.getSessionRequest().getSessionIII()));
-//        sessions.setSessionIV(mapSessionIVRequestToEntity(request.getSessionRequest().getSessionIV()));
-//        sessions.setSessionV(mapSessionVRequestToEntity(request.getSessionRequest().getSessionV()));
-
-        // Associate the Sessions entity with the Questions entity
-        questions.setSessions(sessions);
-
+        Questions questions = Questions.builder()
+                .title(request.getTitle())
+                .semester(request.getSemester())
+                .year(request.getYear())
+                .subject(request.getSubject())
+                .shift(request.getShift())
+                .lecture(request.getLecture())
+                .sessions(mapSessionsRequestToEntity(request.getSessionRequest()))
+                .build();
         return questions;
     }
-
-    private SessionII mapSessionIIRequestToEntity(SessionIIRequest sessionIIRequest) {
-        if (sessionIIRequest == null) {
-            return null; // or throw an exception if necessary
+    private Sessions mapSessionsRequestToEntity(SessionsRequest sessionsRequest) {
+        if (sessionsRequest == null) {
+            return null;
         }
-        SessionII sessionII = SessionII.builder()
-
+        System.out.println(sessionsRequest.getSessionI().getQuestionTitle()+ "sessionsRequest.getSessionI()");
+        Sessions sessions = Sessions.builder()
+                .sessionI(mapSessionIRequestToEntity(sessionsRequest.getSessionI()))
+//                .sessionII(mapSessionIIRequestToEntity(sessionsRequest.getSessionII()))
+//                .sessionIII(mapSessionIIIRequestToEntity(sessionsRequest.getSessionIII()))
+//                .sessionIV(mapSessionIVRequestToEntity(sessionsRequest.getSessionIV()))
+//                .sessionV(mapSessionVRequestToEntity(sessionsRequest.getSessionV()))
                 .build();
-        List<SessionII> sessionIIList = new ArrayList<>();
-        for (SessionIIAQRequest sessionIIAQRequest : sessionIIRequest.getSessionIIAQRequests()){
-            SessionIIAQ sessionIIAQ = SessionIIAQ.builder()
-                    .questionList(sessionIIAQRequest.getQuestion())
-                    .build();
-        }
-
-        sessionII.setQuestionTitle(sessionIIRequest.getQuestionTitle());
-        // Map other attributes as needed
-        return sessionII;
+        System.out.println("sessions11111" + sessions.getSessionI().getQuestionTitle());
+        return sessions;
     }
-
     private SessionI mapSessionIRequestToEntity(SessionIRequest sessionIRequest) {
         if (sessionIRequest == null) {
-            return null; // or throw an exception if necessary
+            return null;
         }
         SessionI sessionI = new SessionI();
         sessionI.setQuestionTitle(sessionIRequest.getQuestionTitle());
-        // Map other attributes as needed
+        sessionI.setQuestionList(mapquestionsList(sessionIRequest.getQuestionList()));
+        sessionI.setAnswerList(mapAnswerList(sessionIRequest.getAnswerList()));
+        System.out.println("sessions1"+sessionI.getQuestionList());
         return sessionI;
     }
+
+    private List<AnswerList> mapAnswerList(List<AnswerListRequest> answerList) {
+        List<AnswerList> mappedAnswerList = new ArrayList<>();
+
+        if (answerList != null) {
+            for (AnswerListRequest answerListRequest : answerList) {
+                AnswerList mappedAnswer = new AnswerList();
+                mappedAnswer.setAnswer(answerListRequest.getAnswer());
+                // Map any other attributes if needed
+
+                mappedAnswerList.add(mappedAnswer);
+            }
+        }
+
+        return mappedAnswerList;
+    }
+
+    private List<QuestionList> mapquestionsList(List<QuestionListRequest> questionList) {
+        List<QuestionList> mappedQuestionList = new ArrayList<>();
+
+        if (questionList != null) {
+            for (QuestionListRequest questionListRequest : questionList) {
+                QuestionList mappedQuestion = new QuestionList();
+                mappedQuestion.setQuestion(questionListRequest.getQuestion());
+                // Map any other attributes if needed
+
+                mappedQuestionList.add(mappedQuestion);
+            }
+        }
+
+        return mappedQuestionList;
+    }
+
+//    private SessionII mapSessionIIRequestToEntity(SessionIIRequest sessionIIRequest) {
+//        if (sessionIIRequest == null) {
+//            return null; // or throw an exception if necessary
+//        }
+//        SessionII sessionII = SessionII.builder()
+//
+//                .build();
+//        List<SessionII> sessionIIList = new ArrayList<>();
+//        for (SessionIIAQRequest sessionIIAQRequest : sessionIIRequest.getSessionIIAQRequests()){
+//            SessionIIAQ sessionIIAQ = SessionIIAQ.builder()
+//                    .questionList(sessionIIAQRequest.getQuestion())
+//                    .build();
+//        }
+//
+//        sessionII.setQuestionTitle(sessionIIRequest.getQuestionTitle());
+//        // Map other attributes as needed
+//        return sessionII;
+//    }
+
+
 
 
     @Override
@@ -112,27 +147,34 @@ public class ExamQuestionsServiceImpl implements ExamQuestionsService {
 
         Sessions sessions = questions.getSessions();
         if (sessions != null) {
-//            List<AnswerListDto> answerListDtos = new ArrayList<>();
-//            for (AnswerList answerList : sessions.getAnswerList()) {
-//                AnswerListDto answerListDto = AnswerListDto.builder()
-//                        .id(answerList.getId())
-//                        .answer(answerList.getAnswer())
-//                        .build();
-//                answerListDtos.add(answerListDto);
-//            }
-//
-//            List<QuestionListDto> questionListDtos = new ArrayList<>();
-//            for (QuestionList questionList : sessions.getQuestionList()) {
-//                QuestionListDto questionListDto = QuestionListDto.builder()
-//                        .id(questionList.getId())
-//                        .question(questionList.getQuestion())
-//                        .build();
-//                questionListDtos.add(questionListDto);
-//            }
+            List<AnswerListDto> answerListDtos = new ArrayList<>();
+            for (AnswerList answerList : sessions.getSessionI().getAnswerList()) {
+                AnswerListDto answerListDto = AnswerListDto.builder()
+                        .id(answerList.getId())
+                        .answer(answerList.getAnswer())
+                        .build();
+                answerListDtos.add(answerListDto);
+            }
+
+            List<QuestionListDto> questionListDtos = new ArrayList<>();
+            for (QuestionList questionList : sessions.getSessionI().getQuestionList()) {
+                QuestionListDto questionListDto = QuestionListDto.builder()
+                        .id(questionList.getId())
+                        .question(questionList.getQuestion())
+                        .build();
+                questionListDtos.add(questionListDto);
+            }
+            SessionIResponse sessionIResponse = SessionIResponse.builder()
+                    .id(sessions.getId())
+                    .questionTitle(sessions.getSessionI().getQuestionTitle())
+                    .answerList(answerListDtos)
+                    .questionList(questionListDtos)
+                    .build();
+
 
             SessionsResponse sessionsResponse = SessionsResponse.builder()
                     .id(sessions.getId())
-                    .sessionI(sessions.getSessionI())
+                    .sessionI(sessionIResponse)
                     .sessionII(sessions.getSessionII())
                     .sessionIII(sessions.getSessionIII())
                     .sessionIV(sessions.getSessionIV())

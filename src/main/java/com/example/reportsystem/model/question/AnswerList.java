@@ -20,6 +20,6 @@ public class AnswerList {
     private SessionI sessionI;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_IIAQ_id")
+    @JoinColumn(name = "session_ii_aq_id")
     private SessionIIAQ sessionIIAQ;
 }

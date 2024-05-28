@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 public class SessionsResponse {
     private Integer id;
-    private SessionI sessionI;
+    private SessionIResponse sessionI;
     private SessionII sessionII;
     private SessionIII sessionIII;
     private SessionIV sessionIV;

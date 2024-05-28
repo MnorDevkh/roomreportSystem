@@ -14,7 +14,7 @@ import java.util.List;
 public class SessionIIAQ {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "session_IIAQ_id")
+    @Column(name = "session_ii_aq_id")
     private Integer id;
     @OneToOne
     @JoinColumn(name = "question_List_id")

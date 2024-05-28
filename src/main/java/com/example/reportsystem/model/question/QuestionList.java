@@ -19,4 +19,12 @@ public class QuestionList {
     @JoinColumn(name = "question_id")
     private SessionI sessionI;
 
+    @Override
+    public String toString() {
+        return "QuestionList{" +
+                "id=" + id +
+                ", question='" + question + '\'' +
+//                ", sessionI=" + sessionI +
+                '}';
+    }
 }

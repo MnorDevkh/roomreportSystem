@@ -20,7 +20,6 @@ public class SessionI {
     private List<QuestionList> questionList;
     @OneToMany(mappedBy = "sessionI", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnswerList> answerList;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id")
-    private Questions questions;
+    @OneToOne(mappedBy = "sessionI")
+    private Sessions sessions;
 }

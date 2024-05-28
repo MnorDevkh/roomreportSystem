@@ -13,8 +13,8 @@ import java.util.List;
 @Builder
 public class SessionsRequest {
     private SessionIRequest sessionI;
-    private SessionIIRequest sessionII;
-    private SessionIII sessionIII;
-    private SessionIV sessionIV;
-    private SessionV sessionV;
+//    private SessionIIRequest sessionII;
+//    private SessionIII sessionIII;
+//    private SessionIV sessionIV;
+//    private SessionV sessionV;
 }

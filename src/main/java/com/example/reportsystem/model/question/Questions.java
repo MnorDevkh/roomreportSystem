@@ -33,8 +33,8 @@ public class Questions {
     @Column(nullable = false, length = 50)
     private String lecture;
 
-    @OneToOne(optional = true)
-    @JoinColumn(name = "session_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "sessions_id")
     private Sessions sessions;
 
     @Override
