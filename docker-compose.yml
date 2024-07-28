@@ -14,7 +14,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   spring-boot-app:
-    build: ./spring-boot-app
+    build: .
     container_name: spring_boot_app_container
     ports:
       - "8080:8080"
