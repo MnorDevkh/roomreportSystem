@@ -14,7 +14,7 @@ spring:
       ddl-auto: update
       show-sql: true
 server:
-    port: 8081
+    port: 8080
 token:
   signing:
     key: 413F4428472B4B6250655368566D5970337336763979244226452948404D6351
