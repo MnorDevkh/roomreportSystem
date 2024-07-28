@@ -16,4 +16,6 @@ import java.util.List;
 public interface ShiftRepository extends JpaRepository<Shift, Integer> {
 
     Page<Shift> findByDeletedFalseAndUsers(PageRequest pageable, User currentUser);
+    @Query("SELECT s FROM Shift s JOIN s.users u WHERE u.id = :userId")
+    List<Shift> findByUserId(long userId);
 }

@@ -21,13 +21,16 @@ public class RoomController {
     public ResponseEntity<?> getAll(){
     return roomService.findAll();
 }
+    @GetMapping("/getById")
+    public ResponseEntity<?> getById(@Param("Room id") Integer id){
+        return roomService.findById(id);
+    }
     @PostMapping("/add")
     public ResponseEntity<?> addNew(@RequestBody RoomRequest request){
         return roomService.save(request);
     }
     @DeleteMapping("/deleteById")
     public ResponseEntity<?> deleteById(@Param("Room id") Integer id) {
-
         return roomService.deleteById(id);
     }
     @PutMapping("/updetById")

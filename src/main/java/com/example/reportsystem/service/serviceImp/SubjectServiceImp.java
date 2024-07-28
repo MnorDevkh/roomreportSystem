@@ -118,38 +118,34 @@ public class SubjectServiceImp implements SubjectService {
 
 
     @Override
-    public ResponseEntity<?> findSubjectByUser(Integer id) {
-//        try {
-//            List<UserSubject> userSubjectList = userSubjectRepository.findAllByUserId(id);
-//            List<SubjectResponse> subjectResponses = new ArrayList<>();
-//                for(UserSubject userSubject: userSubjectList){
-//                    Optional<Subject> subject = subjectRepository.findById(userSubject.getSubject().getId());
-//                        if(!subject.get().isStatus()){
-//                            if(subject.isPresent()){
-//                                SubjectResponse subjectResponse = SubjectResponse.builder()
-//                                    .id(userSubject.getSubject().getId())
-//                                    .name(userSubject.getSubject().getName())
-//                                    .description(userSubject.getSubject().getDescription())
-//                                    .date(userSubject.getDate())
-//                                .build();
-//                subjectResponses.add(subjectResponse);
-//            }
-//        }
-//
-//        ApiResponse apiResponse = ApiResponse.builder()
-//                .payload(subjectResponses)
-//                .totalElement(Long.valueOf(subjectResponses.size()))
-//                .build();
-//        res.setStatus(true);
-//        res.setMessage(message.getSuccess("subject"));
-//        res.setData(apiResponse);
-//
-//    }
-//    return ResponseEntity.ok(res);
-//    }catch (Exception e){
-        return null;
-//}
+    public ResponseEntity<?> findSubjectByUser(long id) {
+        try {
+            List<Subject> subjectList = subjectRepository.findByUserId(id);
+            List<SubjectResponse> subjectResponses = new ArrayList<>();
+            for (Subject subject : subjectList) {
+                Optional<Subject> subjectOptional = subjectRepository.findById(subject.getId());
+                if (subjectOptional.isPresent()) {
+                    SubjectResponse subjectResponse = SubjectResponse.builder()
+                            .id(subjectOptional.get().getId())
+                            .name(subjectOptional.get().getName())
+                            .description(subjectOptional.get().getDescription())
+                            .date(LocalDate.now())
+                            .build();
+                    subjectResponses.add(subjectResponse);
+                }
+            }
 
+            ResponseObject res = new ResponseObject();
+            res.setStatus(true);
+            res.setMessage("fetch data successfully");
+            res.setData(subjectResponses);
+            return ResponseEntity.ok(res);
+        } catch (Exception e) {
+            emptyObject.setStatus(false);
+            emptyObject.setMessage(message.loginFail());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(emptyObject);
+
+        }
     }
 
     @Override
@@ -198,6 +194,12 @@ public class SubjectServiceImp implements SubjectService {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);
         }
         return ResponseEntity.ok(res);
+    }
+
+    @Override
+    public ResponseEntity<?> findById(Integer id) {
+        Optional<Subject> subjectOptional = subjectRepository.findById(id);
+        return ResponseEntity.ok(subjectOptional);
     }
 
 

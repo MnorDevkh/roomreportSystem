@@ -10,9 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LectureRequest {
-
-    private long lectureId;
+public class UserRequest {
     private List<Integer> subjectsId;
     private List<Integer> shiftId;
 }

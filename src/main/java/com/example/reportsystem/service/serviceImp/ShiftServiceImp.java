@@ -65,23 +65,23 @@ public class ShiftServiceImp implements ShiftService {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User currentUser = (User) authentication.getPrincipal();
-            List<SubjectResponse> subjectResponses = new ArrayList<>();
+            List<ShiftResponse> shiftResponses = new ArrayList<>();
             Sort.Direction sortDirection = ascending ? Sort.Direction.ASC : Sort.Direction.DESC;
             PageRequest pageable = PageRequest.of(pageNumber - 1, pageSize, sortDirection, sortBy);
             Page<Shift> pageResult = shiftRepository.findByDeletedFalseAndUsers(pageable, currentUser);
             for (Shift shift : pageResult) {
                 Optional<Shift> shiftOptional = shiftRepository.findById(shift.getId());
                 if (shiftOptional.isPresent() && !shiftOptional.get().isDeleted()) {
-                    SubjectResponse subjectResponse = SubjectResponse.builder()
+                    ShiftResponse shiftResponse = ShiftResponse.builder()
                             .id(shiftOptional.get().getId())
                             .name(shiftOptional.get().getName())
                             .description(shiftOptional.get().getDescription())
                             .date(shiftOptional.get().getDate())
                             .build();
-                    subjectResponses.add(subjectResponse);
+                    shiftResponses.add(shiftResponse);
                 }
             }
-            ApiResponse res = new ApiResponse(true, "Fetch books successful!", subjectResponses, pageResult.getNumber() + 1, pageResult.getSize(), pageResult.getTotalPages(), pageResult.getTotalElements());
+            ApiResponse res = new ApiResponse(true, "Fetch books successful!", shiftResponses, pageResult.getNumber() + 1, pageResult.getSize(), pageResult.getTotalPages(), pageResult.getTotalElements());
             return ResponseEntity.ok(res);
         } catch (Exception e) {
             emptyObject.setStatus(false);
@@ -90,6 +90,40 @@ public class ShiftServiceImp implements ShiftService {
         }
     }
 
+    @Override
+    public ResponseEntity<?> findShiftByUserId(long userId) {
+        try {
+            List<Shift> subjectList = shiftRepository.findByUserId(userId);
+            List<ShiftResponse> shiftResponses = new ArrayList<>();
+            for (Shift shift : subjectList) {
+                Optional<Shift> shiftOptional = shiftRepository.findById(shift.getId());
+                if (shiftOptional.isPresent() && !shiftOptional.get().isDeleted()) {
+                    ShiftResponse shiftResponse = ShiftResponse.builder()
+                            .id(shiftOptional.get().getId())
+                            .name(shiftOptional.get().getName())
+                            .description(shiftOptional.get().getDescription())
+                            .date(shiftOptional.get().getDate())
+                            .build();
+                    shiftResponses.add(shiftResponse);
+                }
+            }
+            ResponseObject res = new ResponseObject();
+            res.setStatus(true);
+            res.setMessage("fetch data successfully");
+            res.setData(shiftResponses);
+            return ResponseEntity.ok(res);
+        } catch (Exception e) {
+            emptyObject.setStatus(false);
+            emptyObject.setMessage(message.loginFail());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(emptyObject);
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> findById(Integer id) {
+        Optional<Shift> shiftOptional = shiftRepository.findById(id);
+        return ResponseEntity.ok(shiftOptional);
+    }
 
     @Override
     public ResponseEntity<?> save(ShiftRequest shiftRequest) {
@@ -160,4 +194,5 @@ public class ShiftServiceImp implements ShiftService {
         }
         return ResponseEntity.ok(res);
     }
+
 }

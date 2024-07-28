@@ -1,14 +1,11 @@
 package com.example.reportsystem.controller.report;
 
-import com.example.reportsystem.model.request.LectureRequest;
+import com.example.reportsystem.model.request.UserRequest;
 import com.example.reportsystem.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -39,8 +36,8 @@ public class UserController {
         return userService.findUserById(id);
     }
     @PutMapping("update")
-    public ResponseEntity<?> updateUser(@RequestBody LectureRequest lectureRequest){
-        return userService.AddSubjectRoomShiftToLecturer(lectureRequest);
+    public ResponseEntity<?> updateUser(@Param("User id") long id, @RequestBody UserRequest userRequest){
+        return userService.AddSubjectRoomShiftToLecturer(id,userRequest);
     }
 
 }

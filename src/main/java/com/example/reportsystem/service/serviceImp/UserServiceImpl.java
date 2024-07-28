@@ -2,11 +2,8 @@ package com.example.reportsystem.service.serviceImp;
 
 import com.example.reportsystem.model.*;
 import com.example.reportsystem.model.report.Room;
-import com.example.reportsystem.model.request.LectureRequest;
-import com.example.reportsystem.model.responses.ApiResponse;
-import com.example.reportsystem.model.responses.SubjectResponse;
+import com.example.reportsystem.model.request.UserRequest;
 import com.example.reportsystem.model.responses.UserResponse;
-import com.example.reportsystem.model.toDto.RoomDto;
 import com.example.reportsystem.model.toDto.ShiftDto;
 import com.example.reportsystem.model.toDto.SubjectDto;
 import com.example.reportsystem.repository.*;
@@ -20,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -127,20 +123,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> AddSubjectRoomShiftToLecturer(LectureRequest lectureRequest) {
+    public ResponseEntity<?> AddSubjectRoomShiftToLecturer(long id, UserRequest userRequest) {
         try {
-            User lecturer = userRepository.findById(lectureRequest.getLectureId())
+            User user = userRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Lecturer not found"));
 
-            Set<Subject> subjects = getSubjectsByIds(lectureRequest.getSubjectsId());
-            Set<Shift> shifts = getShiftsByIds(lectureRequest.getShiftId());
+            Set<Subject> subjects = getSubjectsByIds(userRequest.getSubjectsId());
+            Set<Shift> shifts = getShiftsByIds(userRequest.getShiftId());
 
-            // Associate subjects, shifts, and rooms with the lecturer
-            lecturer.setSubjects(subjects);
-            lecturer.setShifts(shifts);
+            user.setSubjects(subjects);
+            user.setShifts(shifts);
 
-            userRepository.save(lecturer);
-            UserResponse userResponse = userResponseFlag(lecturer);
+            userRepository.save(user);
+            UserResponse userResponse = userResponseFlag(user);
 
             return ResponseEntity.ok(userResponse);
         } catch (NotFoundException e) {
@@ -226,14 +221,13 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> findAllUser() {
         try {
             List<User> userList = userRepository.findAll();
-            System.out.println("userList" +userList.get(0).getShifts().toString() );
             List<UserResponse> userResponses = new ArrayList<>();
             for (User user : userList) {
                 UserResponse userResponse = userResponseFlag(user);
                 System.out.println(userResponse);
                 userResponses.add(userResponse);
             }
-            return ResponseEntity.ok(userResponses); // Assuming 'res' is an instance variable of Response class.
+            return ResponseEntity.ok(userResponses);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while processing users.");
         }
@@ -267,8 +261,6 @@ public class UserServiceImpl implements UserService {
                 .shift(shiftDtoList)
                 .build();
     }
-
-
     private ShiftDto shiftFlag(Integer shiftId) {
         Optional<Shift> shift = shiftRepository.findById(shiftId);
         return shift.map(value -> ShiftDto.builder()

@@ -20,18 +20,32 @@ public class ShiftController {
     public ResponseEntity<?> getAll(){
         return service.findAll();
     };
+
+    @GetMapping("/getById")
+    public ResponseEntity<?> getById(@Param("Shift ID") Integer id){
+        return service.findById(id);
+    };
+
     @PostMapping("/add")
     public ResponseEntity<?> addNew(@RequestBody ShiftRequest shiftRequest){
         return service.save(shiftRequest);
     }
+
     @GetMapping("/current-user")
     public ResponseEntity<?> getByCurrentUser(@Param("pageNumber") Integer pageNumber,@Param("pageSize") Integer pageSize,@Param("sortBy") String sortBy,@Param("ascending") boolean ascending){
         return service.findShiftCurrenUser(pageNumber, pageSize, sortBy, ascending);
     }
+
+    @GetMapping("/byUser")
+    public ResponseEntity<?> getByUserId(@Param("pageNumber") long userId){
+        return service.findShiftByUserId(userId);
+    }
+
     @DeleteMapping("/deleteById")
     public ResponseEntity<?> deleteById(Integer id){
         return service.deleteById(id);
     }
+
     @PutMapping("/updateById")
     public ResponseEntity<?> updateById(@Param("Shift ID") Integer id,@RequestBody ShiftRequest shiftRequest){
         return service.updateById(id,shiftRequest);

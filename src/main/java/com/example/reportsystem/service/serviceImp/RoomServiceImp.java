@@ -55,6 +55,13 @@ public class RoomServiceImp implements RoomService {
     }
     return ResponseEntity.ok(res);
     }
+
+    @Override
+    public ResponseEntity<?> findById(Integer id) {
+        Optional<Room> optionalRoom = roomRepository.findById(id);
+        return ResponseEntity.ok(optionalRoom);
+    }
+
     @Override
     public ResponseEntity<?> save(RoomRequest request) {
 

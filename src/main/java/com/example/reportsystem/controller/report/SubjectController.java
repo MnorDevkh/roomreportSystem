@@ -22,12 +22,16 @@ public class SubjectController {
     public ResponseEntity<?> getAll(){
         return service.findAllSubject();
     }
+    @GetMapping("/getById")
+    public ResponseEntity<?> getById(@Param("User Id") Integer id){
+        return service.findById(id);
+    }
     @PostMapping("/add")
     public ResponseEntity<?> saveSubject(@RequestBody SubjectRequest subjectRequest){
         return  service.addSubject(subjectRequest);
     }
-    @GetMapping("/by-user")
-    public ResponseEntity<?> getByUser(@Param("User Id") Integer id){
+    @GetMapping("/byUser")
+    public ResponseEntity<?> getByUser(@Param("User Id") long id){
         return service.findSubjectByUser(id);
     }
     @GetMapping("/current-user")
