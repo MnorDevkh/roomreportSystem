@@ -7,7 +7,7 @@ spring:
 #    driver-class-name: com.mysql.cj.jdbc.Driverdatasource:
     url: jdbc:postgresql://localhost:5432/reportsystem
     username: postgres
-    password: 123
+    password: 123_password
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
