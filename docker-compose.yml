@@ -3,6 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:latest
+    restart: always
     container_name: postgres_container
     environment:
       POSTGRES_USER: postgres
@@ -15,6 +16,7 @@ services:
 
   spring-boot-app:
     build: .
+    restart: always
     container_name: spring_boot_app_container
     ports:
       - "8080:8989"
