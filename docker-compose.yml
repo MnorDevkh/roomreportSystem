@@ -3,6 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:latest
+    restart: always
     container_name: postgres_container
     environment:
       POSTGRES_USER: postgres
@@ -14,10 +15,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   spring-boot-app:
-    build: ./spring-boot-app
+    build: .
+    restart: always
     container_name: spring_boot_app_container
     ports:
-      - "8080:8080"
+      - "8080:8989"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/reportsystem
       SPRING_DATASOURCE_USERNAME: postgres
