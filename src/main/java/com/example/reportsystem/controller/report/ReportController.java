@@ -54,4 +54,8 @@ public class ReportController {
     public ResponseEntity<?> getById(@Param("Report Id") Integer id){
         return service.getReportById(id);
     }
+    @GetMapping("/hello")
+    public String helloController() {
+        return "hello";
+    }
 }
